@@ -5,22 +5,26 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 public class ConsumoApi {
     public String obterDados(String endereco){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endereco))
+                .timeout(Duration.ofSeconds(10))
                 .build();
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try{
             response = client
                     .send(request,HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+
         String json = response.body();
         return json;
     }
